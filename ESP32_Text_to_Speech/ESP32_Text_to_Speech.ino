@@ -8,7 +8,7 @@
          Audio.h libraries if you have already installed.
       3. Add your Credentials like WiFi SSID Name, Password below to make this project
          connect with Internet
-
+      4. Tested with Arduino IDE version 1.8.19
 
     If you still facing any issues, kindly watch out our video about this project on our YouTube channel
     YouTube channel - https://www.youtube.com/techiesms
@@ -20,14 +20,12 @@
 #include "WiFi.h"
 #include "Audio.h" // Download this Library -> https://github.com/schreibfaul1/ESP32-audioI2S
 
-
 #define uart_en 15
-#define RXp2 16
+#define RXp2 16      
 #define TXp2 17
 #define I2S_DOUT      25
 #define I2S_BCLK      27
 #define I2S_LRC       26
-
 
 // Your WiFi Credentials
 const char *ssid = "SSID";       // WiFi SSID Name
@@ -40,7 +38,7 @@ void setup()
 {
 
   Serial.begin(115200);
-  Serial2.begin(115200, SERIAL_8N1, RXp2, TXp2);
+  Serial2.begin(115200,SERIAL_8N1, RXp2, TXp2);
 
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
@@ -58,15 +56,34 @@ void setup()
 void loop()
 
 {
+
   if (Serial2.available()) {
     String Answer = Serial2.readString();
-    Serial.println(Answer);
-    audio.connecttospeech(Answer.c_str(), "en");
+  
+    //-----
+            // Split the answer into chunks and send each chunk to connecttospeech
+        size_t chunkSize = 80;  // Define chunk size (adjust if necessary)
+        for (size_t i = 0; i < Answer.length(); i += chunkSize) {
+        
+          String chunk = Answer.substring(i, (i + chunkSize));
+          Serial.println(chunk);
+          audio.connecttospeech(chunk.c_str(), "en");
+
+          while(audio.isRunning()){
+            audio.loop();
+        
+
+          }
+    //--------
+   
   }
-  audio.loop();
+ 
+
+}
+audio.loop();
 
 }
 
 void audio_info(const char *info) {
-  Serial.print("audio_info: "); Serial.println(info);
+
 }

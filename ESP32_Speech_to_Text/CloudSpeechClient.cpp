@@ -70,7 +70,7 @@ void CloudSpeechClient::Transcribe(Audio* audio) {
     My_Answer = My_Answer + temp;
     // Serial.write(client.read());
   }
-
+client.stop();
   // Serial.print("My Answer - ");Serial.println(My_Answer);
   int postion = My_Answer.indexOf('{');
   // Serial.println(postion);
@@ -99,59 +99,8 @@ void CloudSpeechClient::Transcribe(Audio* audio) {
   //Serial.println(ans);
   Serial.print(chatgpt_Q); Serial.println("-");
   ///////////////////////////////////////////////////////////
-  pinMode(2, OUTPUT);
-  if (strstr(chatgpt_Q, "light on")) {
-    digitalWrite(2, HIGH);
-    Serial.println("Light's On");
-    digitalWrite(15, LOW);
-    delay(1);
-    Serial2.println("Turning Light on");
-    digitalWrite(led_1, 1);
-    digitalWrite(led_3, 0);
-    digitalWrite(led_2, 1);
-    //digitalWrite(uart_en,HIGH);
-    Serial.print("To ask again");
-  }
-  if (strstr(chatgpt_Q, "light off")) {
-    digitalWrite(2, LOW);
-    Serial.println("Light's Off");
-    digitalWrite(15, LOW);
-    delay(1);
-    Serial2.println("Turning Light off");
-    digitalWrite(led_1, 1);
-    digitalWrite(led_2, 1);
-    //digitalWrite(uart_en,HIGH);
-    Serial.print("To ask again");
-  }
-  if (strstr(chatgpt_Q, "blink on")) {
-    HTTPClient http;
-
-    USE_SERIAL.print("[HTTP] begin...\n");
-    // configure traged server and url
-    //http.begin("https://www.howsmyssl.com/a/check", ca); //HTTPS
-    http.begin("http://example.com/index.html"); //HTTP
-
-    USE_SERIAL.print("[HTTP] GET...\n");
-    // start connection and send HTTP header
-    int httpCode = http.GET();
-
-    // httpCode will be negative on error
-    if (httpCode > 0) {
-      // HTTP header has been send and Server response header has been handled
-      USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
-
-      // file found at server
-      if (httpCode == HTTP_CODE_OK) {
-        String payload = http.getString();
-        USE_SERIAL.println(payload);
-      }
-    } else {
-      USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-    }
-
-    http.end();
-  }
-  else if (strstr(chatgpt_Q, "light on") == 0 && strstr(chatgpt_Q, "light off") == 0 && strstr(chatgpt_Q, "blink on") == 0 ) {
+ 
+  {
     Serial.println("Asking Chat GPT");
     HTTPClient https;
 
